@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "iterm2-mcp"
+version = "0.1.0"
+description = "MCP server that gives Claude full control over iTerm2 via the iTerm2 Python API."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Loren Carvalho" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "iterm2>=2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/lorencarvalho/iterm2-mcp"
+Repository = "https://github.com/lorencarvalho/iterm2-mcp"
+
+[project.scripts]
+iterm2-mcp = "iterm2_mcp.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/iterm2_mcp"]
+
+[dependency-groups]
+dev = [
+    "ty",
+    "ruff",
+]
+
+[tool.ty.environment]
+python-version = "3.12"
+
+[tool.ty.src]
+include = ["src/**/*.py"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
