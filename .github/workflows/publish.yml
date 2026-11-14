@@ -13,6 +13,14 @@ jobs:
     environment: pypi
     steps:
       - uses: actions/checkout@v4
+      - name: Verify tag matches package version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION=$(uv run python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])")
+          if [ "$TAG" != "$VERSION" ]; then
+            echo "::error::Release tag '$TAG' does not match pyproject.toml version '$VERSION'"
+            exit 1
+          fi
       - uses: astral-sh/setup-uv@v6
       - run: uv build
       - uses: pypa/gh-action-pypi-publish@release/v1
