@@ -16,9 +16,33 @@ from __future__ import annotations
 import asyncio
 
 import iterm2
-from mcp.server.fastmcp import FastMCP
+import iterm2.app
+from mcp.server.mcpserver import MCPServer
 
-mcp = FastMCP("iterm2-mcp")
+# Workaround for an upstream recursion in the iterm2 library (reproduced on
+# 2.15 through 2.20) when bootstrapping the App model against recent iTerm2
+# builds. async_construct -> async_refresh_focus -> _async_focus_change reaches
+# a `selected_tab` focus notification whose window isn't in the model yet, calls
+# async_refresh -> async_refresh_focus, and loops with no base case until the
+# stack overflows ("maximum recursion depth exceeded") — which takes down every
+# tool, since they all reach App via async_get_app. Guarding async_refresh_focus
+# against re-entry lets the first refresh populate the window list and settle.
+_orig_async_refresh_focus = iterm2.app.App.async_refresh_focus
+
+
+async def _guarded_async_refresh_focus(self) -> None:
+    if getattr(self, "_reentrancy_guard", False):
+        return
+    self._reentrancy_guard = True
+    try:
+        await _orig_async_refresh_focus(self)
+    finally:
+        self._reentrancy_guard = False
+
+
+iterm2.app.App.async_refresh_focus = _guarded_async_refresh_focus
+
+mcp = MCPServer("iterm2-mcp")
 
 _connection: iterm2.Connection | None = None
 _conn_lock = asyncio.Lock()

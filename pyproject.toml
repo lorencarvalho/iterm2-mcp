@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 dependencies = [
-    "mcp>=1.0.0",
+    "mcp>=2.0",
     "iterm2>=2.0",
 ]
 
