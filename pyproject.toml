@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "iterm2-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "MCP server that gives Claude full control over iTerm2 via the iTerm2 Python API."
 readme = "README.md"
 requires-python = ">=3.10"
