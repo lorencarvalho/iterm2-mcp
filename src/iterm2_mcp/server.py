@@ -40,7 +40,9 @@ async def _guarded_async_refresh_focus(self) -> None:
         self._reentrancy_guard = False
 
 
-iterm2.app.App.async_refresh_focus = _guarded_async_refresh_focus
+# ty considers the guard a signature mismatch for the attribute it shadows;
+# the monkeypatch is deliberate.
+iterm2.app.App.async_refresh_focus = _guarded_async_refresh_focus  # ty: ignore[invalid-assignment]
 
 mcp = MCPServer("iterm2-mcp")
 
